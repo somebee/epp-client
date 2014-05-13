@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+  <schema targetNamespace="http://www.norid.no/xsd/no-ext-contact-1.0"
+          xmlns:no-ext-contact="http://www.norid.no/xsd/no-ext-contact-1.0"
+          xmlns:contact="urn:ietf:params:xml:ns:contact-1.0"
+          xmlns:epp="urn:ietf:params:xml:ns:epp-1.0"
+          xmlns:eppcom="urn:ietf:params:xml:ns:eppcom-1.0"
+          xmlns="http://www.w3.org/2001/XMLSchema"
+          elementFormDefault="qualified">
+
+    <import namespace="urn:ietf:params:xml:ns:contact-1.0"
+            schemaLocation="contact-1.0.xsd"/>
+    <import namespace="urn:ietf:params:xml:ns:eppcom-1.0"
+            schemaLocation="eppcom-1.0.xsd"/>
+    <import namespace="urn:ietf:params:xml:ns:epp-1.0"
+            schemaLocation="epp-1.0.xsd"/>
+
+    <annotation>
+      <documentation>
+        Extensible Provisioning Protocol v1.0
+        .NO extensions
+      </documentation>
+    </annotation>
+
+    <element name="create"  type="no-ext-contact:createType"/>
+    <element name="update"  type="no-ext-contact:updateType"/>
+    <element name="infData" type="no-ext-contact:createType"/>
+
+    <complexType name="createType">
+       <sequence>
+         <element name="type"           type="no-ext-contact:contactTypeType"/>
+	 <element name="identity"       type="no-ext-contact:identityType"
+          minOccurs="0"/>
+         <element name="mobilePhone"    type="contact:e164Type"
+          minOccurs="0"/>
+         <element name="email"          type="eppcom:minTokenType"
+          minOccurs="0" maxOccurs="unbounded"/>
+         <element name="organization"   type="eppcom:clIDType"
+          minOccurs="0" maxOccurs="unbounded"/>
+         <element name="roleContact"    type="eppcom:clIDType"
+          minOccurs="0" maxOccurs="unbounded"/>
+         <element name="disclose" type="no-ext-contact:discloseType"
+          minOccurs="0"/>
+       </sequence>
+    </complexType>
+
+    <complexType name="updateType">
+       <sequence>
+         <element name="chg" type="no-ext-contact:chgType"
+          minOccurs="0"/>
+	 <element name="add" type="no-ext-contact:addRemType"
+          minOccurs="0"/>
+	 <element name="rem" type="no-ext-contact:addRemType"
+          minOccurs="0"/>
+       </sequence>
+    </complexType>
+
+    <complexType name="chgType">
+       <sequence>
+	 <element name="identity"    type="no-ext-contact:identityType"
+          minOccurs="0"/>
+         <element name="mobilePhone" type="contact:e164Type"
+          minOccurs="0"/>
+         <element name="disclose" type="no-ext-contact:discloseType"
+          minOccurs="0"/>
+       </sequence>
+    </complexType>
+
+    <complexType name="addRemType">
+       <sequence>
+         <element name="email"          type="eppcom:minTokenType"
+          minOccurs="0" maxOccurs="unbounded"/>
+	 <element name="organization"   type="eppcom:clIDType"
+	  minOccurs="0" maxOccurs="unbounded"/>
+         <element name="roleContact"    type="eppcom:clIDType"
+          minOccurs="0" maxOccurs="unbounded"/>
+       </sequence>
+    </complexType>
+
+    <complexType name="identityType">
+       <simpleContent>
+          <extension base="eppcom:minTokenType">
+             <attribute name="type" type="no-ext-contact:identityTypeType"
+			use="required"/>
+          </extension>
+       </simpleContent>
+    </complexType>
+
+    <simpleType name="identityTypeType">
+       <restriction base="token">
+         <enumeration value="organizationNumber"/>
+	 <enumeration value="anonymousPersonIdentifier"/>
+         <enumeration value="localIdentity"/>
+         <enumeration value="nationalIdentityNumber"/>
+       </restriction>
+    </simpleType>
+
+    <simpleType name="contactTypeType">
+       <restriction base="token">
+         <enumeration value="person"/>
+         <enumeration value="role"/>
+         <enumeration value="organization"/>
+       </restriction>
+    </simpleType>
+
+    <complexType name="discloseType">
+      <sequence>
+        <element name="mobilePhone" minOccurs="0"/>
+      </sequence>
+      <attribute name="flag" type="boolean" use="required"/>
+    </complexType>
+
+  </schema>

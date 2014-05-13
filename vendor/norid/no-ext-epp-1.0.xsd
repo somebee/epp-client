@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+  <schema targetNamespace="http://www.norid.no/xsd/no-ext-epp-1.0"
+          xmlns:no-ext-epp="http://www.norid.no/xsd/no-ext-epp-1.0"
+          xmlns:epp="urn:ietf:params:xml:ns:epp-1.0"
+          xmlns:eppcom="urn:ietf:params:xml:ns:eppcom-1.0"
+          xmlns="http://www.w3.org/2001/XMLSchema"
+          elementFormDefault="qualified">
+
+    <import namespace="urn:ietf:params:xml:ns:eppcom-1.0"
+            schemaLocation="eppcom-1.0.xsd"/>
+    <import namespace="urn:ietf:params:xml:ns:epp-1.0"
+            schemaLocation="epp-1.0.xsd"/>
+
+
+    <annotation>
+      <documentation>
+        Extensible Provisioning Protocol v1.0 schema.
+        .NO extensions
+      </documentation>
+    </annotation>
+
+
+    <element name="command"  type="no-ext-epp:commandType"/>
+
+    <complexType name="commandType">
+      <sequence>
+        <choice>
+          <element name="transfer" type="no-ext-epp:transferType"/>
+          <element name="withdraw" type="no-ext-epp:withdrawType"/>
+        </choice>
+        <element name="extension" type="epp:extAnyType"
+         minOccurs="0"/>
+        <element name="clTRID" type="epp:trIDStringType"
+         minOccurs="0"/>
+      </sequence>
+    </complexType>
+
+    <complexType name="transferType">
+      <sequence>
+        <any namespace="##other"/>
+      </sequence>
+      <attribute name="op" type="no-ext-epp:transferOpType"
+       use="required"/>
+    </complexType>
+
+    <simpleType name="transferOpType">
+      <restriction base="token">
+        <enumeration value="execute"/>
+      </restriction>
+    </simpleType>
+
+    <complexType name="withdrawType">
+      <sequence>
+        <any namespace="##other"/>
+      </sequence>
+    </complexType>
+
+    <!-- Non public extensions:
+    	 The facet extension is reserved for Norid and will be rejected 
+    	 if used by any of our registrars.
+  	 -->
+
+    <element name="extended" type="no-ext-epp:facetListType"/>
+
+    <complexType name="facetListType">
+      <sequence>
+        <element name="facet" type="no-ext-epp:facetType"
+         maxOccurs="100"/>
+      </sequence>
+    </complexType>
+
+    <complexType name="facetType">
+       <simpleContent>
+         <extension base="string">
+           <attribute name="name" type="token"
+            use="required"/>
+         </extension>
+       </simpleContent>
+    </complexType>
+
+  </schema>

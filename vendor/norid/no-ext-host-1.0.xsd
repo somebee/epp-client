@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+  <schema targetNamespace="http://www.norid.no/xsd/no-ext-host-1.0"
+          xmlns:no-ext-host="http://www.norid.no/xsd/no-ext-host-1.0"
+          xmlns:host="urn:ietf:params:xml:ns:host-1.0"
+          xmlns:epp="urn:ietf:params:xml:ns:epp-1.0"
+          xmlns:eppcom="urn:ietf:params:xml:ns:eppcom-1.0"
+          xmlns="http://www.w3.org/2001/XMLSchema"
+          elementFormDefault="qualified">
+
+    <import namespace="urn:ietf:params:xml:ns:host-1.0"
+            schemaLocation="host-1.0.xsd"/>
+    <import namespace="urn:ietf:params:xml:ns:eppcom-1.0"
+            schemaLocation="eppcom-1.0.xsd"/>
+    <import namespace="urn:ietf:params:xml:ns:epp-1.0"
+            schemaLocation="epp-1.0.xsd"/>
+
+    <annotation>
+      <documentation>
+        Extensible Provisioning Protocol v1.0
+        .NO extensions
+      </documentation>
+    </annotation>
+
+    <element name="info"    type="no-ext-host:infoType"/>
+    <element name="infData" type="no-ext-host:createType"/>
+    <element name="create"  type="no-ext-host:createType"/>
+    <element name="update"  type="no-ext-host:updateType"/>
+
+    <complexType name="infoType">
+       <sequence>
+	 <element name="sponsoringClientID" type="eppcom:clIDType"
+          minOccurs="0"/>
+       </sequence>
+    </complexType>
+
+    <complexType name="createType">
+       <sequence>
+         <element name="contact" type="eppcom:clIDType"
+          minOccurs="0"/>
+       </sequence>
+    </complexType>
+
+    <complexType name="updateType">
+       <sequence>
+	 <element name="add" type="no-ext-host:addRemType"
+          minOccurs="0"/>
+	 <element name="rem" type="no-ext-host:addRemType"
+          minOccurs="0"/>
+       </sequence>
+    </complexType>
+
+    <complexType name="addRemType">
+       <sequence>
+	 <element name="contact"   type="eppcom:clIDType"/>
+       </sequence>
+    </complexType>
+
+  </schema>

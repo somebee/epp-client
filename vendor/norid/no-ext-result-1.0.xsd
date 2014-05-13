@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+   <schema targetNamespace="http://www.norid.no/xsd/no-ext-result-1.0"
+           xmlns:no-ext-result="http://www.norid.no/xsd/no-ext-result-1.0"
+           xmlns:epp="urn:ietf:params:xml:ns:epp-1.0"
+           xmlns="http://www.w3.org/2001/XMLSchema"
+           elementFormDefault="qualified">
+
+    <import namespace="urn:ietf:params:xml:ns:epp-1.0"
+            schemaLocation="epp-1.0.xsd"/>
+
+    <annotation>
+      <documentation>
+        Extensible Provisioning Protocol v1.0
+        .NO result schema.
+      </documentation>
+    </annotation>
+
+    <element name="conditions" type="no-ext-result:conditionListType"/>
+    <element name="message"    type="no-ext-result:messageType"/>
+
+    <complexType name="conditionListType">
+      <sequence>
+        <element name="condition" type="no-ext-result:conditionType"
+         maxOccurs="unbounded"/>
+      </sequence>
+    </complexType>
+
+    <complexType name="conditionType">
+      <sequence>
+        <element name="msg"        type="string"/>
+        <element name="details"    type="string"/>
+      </sequence>
+      <attribute name="code"     type="no-ext-result:conditionCodeType"
+       use="required"/>
+      <attribute name="severity" type="no-ext-result:conditionSeverityType"
+       use="required"/>
+    </complexType>
+
+    <simpleType name="conditionCodeType">
+      <restriction base="token">
+        <pattern value="[A-Z\d]+"/>
+        <maxLength value="24"/>
+      </restriction>
+    </simpleType>
+
+    <simpleType name="conditionSeverityType">
+      <restriction base="token">
+        <enumeration value="info"/>
+        <enumeration value="warning"/>
+        <enumeration value="error"/>
+        <enumeration value="fatal"/>
+      </restriction>
+    </simpleType>
+
+    <complexType name="messageType">
+      <sequence>
+        <element name="desc"    type="string"/>
+        <element name="data"    type="no-ext-result:messageDataType"
+         minOccurs="0"/>
+      </sequence>
+      <attribute name="type" type="no-ext-result:messageTypeType"
+       use="required"/>
+    </complexType>
+
+    <complexType name="messageDataType">
+      <sequence>
+        <element name="entry" type="no-ext-result:attributeType"
+         maxOccurs="unbounded"   minOccurs="0"/>
+        <any namespace="urn:ietf:params:xml:ns:epp-1.0" minOccurs="0"/>
+      </sequence>
+    </complexType>
+
+    <complexType name="attributeType">
+       <simpleContent>
+         <extension base="string">
+           <attribute name="name" type="token"
+            use="required"/>
+         </extension>
+       </simpleContent>
+    </complexType>
+
+    <simpleType name="messageTypeType">
+      <restriction base="token">
+        <maxLength value="100"/>
+      </restriction>
+    </simpleType>
+</schema>

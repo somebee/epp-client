@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+ <schema xmlns="http://www.w3.org/2001/XMLSchema" 
+         xmlns:no-ext-domain="http://www.norid.no/xsd/no-ext-domain-1.1" 
+         xmlns:epp="urn:ietf:params:xml:ns:epp-1.0" 
+         xmlns:eppcom="urn:ietf:params:xml:ns:eppcom-1.0" 
+         xmlns:contact="urn:ietf:params:xml:ns:contact-1.0" 
+         targetNamespace="http://www.norid.no/xsd/no-ext-domain-1.1" 
+         elementFormDefault="qualified">
+
+    <import namespace="urn:ietf:params:xml:ns:eppcom-1.0" schemaLocation="eppcom-1.0.xsd"/>
+    <import namespace="urn:ietf:params:xml:ns:contact-1.0" schemaLocation="contact-1.0.xsd"/>
+
+    <annotation>
+      <documentation>Extensible Provisioning Protocol v1.0 .NO extensions</documentation>
+    </annotation>
+
+    <element name="transfer"   type="no-ext-domain:transferExtensionType"/>
+
+    <complexType name="transferExtensionType">
+       <sequence>
+         <element name="token" type="no-ext-domain:transferTokenType"
+          minOccurs="0"/>
+	 <element name="notify" type="no-ext-domain:transferNotifyType"
+          minOccurs="0"/>
+       </sequence>
+    </complexType>
+
+    <simpleType name="transferTokenType">
+       <restriction base="token">
+         <minLength value="1"/>
+         <maxLength value="512"/>
+       </restriction>
+    </simpleType>
+
+    <complexType name="transferNotifyType">
+      <choice>
+        <element name="email" type="eppcom:minTokenType"/>
+        <element name="mobilePhone" type="contact:e164Type"/>
+      </choice>
+    </complexType>
+
+    <element name="withdraw" type="no-ext-domain:withdrawType"/>
+
+    <complexType name="withdrawType">
+      <sequence>
+        <element name="name" type="eppcom:labelType"/>
+      </sequence>
+    </complexType>
+    
+    <element name="delete" type="no-ext-domain:deleteExtensionType"/>
+
+    <complexType name="deleteExtensionType">
+       <sequence>
+         <element name="deleteFromDNS"      type="date"/>
+         <element name="deleteFromRegistry" type="date"/>
+       </sequence>
+    </complexType>
+
+   <!-- 
+     Extensions to carry the applicant statement data set in a
+     domain-create, domain-update and domain-info-respnse
+    -->
+
+    <element name="create" type="no-ext-domain:createType"/>
+
+    <complexType name="createType">
+      <sequence>
+       <element name="applicantDataset" type="no-ext-domain:applicantDatasetCreUpdType"/>
+      </sequence>
+    </complexType>
+
+    <complexType name="applicantDatasetCreUpdType">
+      <sequence>
+        <element name="versionNumber" type="no-ext-domain:versionType"/>
+        <element name="acceptName" type="no-ext-domain:acceptNameType"/>
+        <element name="acceptDate" type="dateTime"/>
+      </sequence>
+    </complexType>
+
+    <simpleType name="versionType">
+      <restriction base="token">
+        <pattern value="[0-9]+\.[0-9]+"/>
+      </restriction>
+    </simpleType>
+
+    <simpleType name="acceptNameType">
+      <restriction base="normalizedString">
+        <minLength value="1"/>
+        <maxLength value="255"/>
+      </restriction>
+    </simpleType>
+
+    <element name="update" type="no-ext-domain:updateType"/>
+
+    <complexType name="updateType">
+      <sequence>
+        <element name="chg" type="no-ext-domain:applicantDatasetChgType" minOccurs="0"/>
+      </sequence>
+    </complexType>
+
+    <complexType name="applicantDatasetChgType">
+      <sequence>
+        <element name="applicantDataset" type="no-ext-domain:applicantDatasetCreUpdType"/>
+      </sequence>
+    </complexType>
+
+    <!-- 
+      The applicantDatasetInfoType contains the same three attributes as 
+      applicantDatasetCreUpdType, plus two more attributes.
+      The reason for this structure is to be able to return all five 
+      elements inside a single infData.
+    -->
+
+    <element name="infData" type="no-ext-domain:infDataType"/>
+
+    <complexType name="infDataType">
+      <sequence>
+        <element name="applicantDataset" type="no-ext-domain:applicantDatasetInfoType" minOccurs="0"/>
+      </sequence>
+    </complexType>
+
+    <complexType name="applicantDatasetInfoType">
+      <sequence>
+        <element name="versionNumber" type="no-ext-domain:versionType"/>
+        <element name="acceptName" type="no-ext-domain:acceptNameType"/>
+        <element name="acceptDate" type="dateTime"/>
+        <element name="updateClientID" type="eppcom:clIDType"/>
+        <element name="updateDate" type="dateTime"/>
+      </sequence>
+    </complexType>
+
+ </schema>
+

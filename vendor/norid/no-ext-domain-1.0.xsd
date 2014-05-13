@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+  <schema targetNamespace="http://www.norid.no/xsd/no-ext-domain-1.0"
+          xmlns:no-ext-domain="http://www.norid.no/xsd/no-ext-domain-1.0"
+          xmlns:epp="urn:ietf:params:xml:ns:epp-1.0"
+          xmlns:eppcom="urn:ietf:params:xml:ns:eppcom-1.0"
+	  xmlns:contact="urn:ietf:params:xml:ns:contact-1.0"
+          xmlns="http://www.w3.org/2001/XMLSchema"
+          elementFormDefault="qualified">
+
+    <import namespace="urn:ietf:params:xml:ns:eppcom-1.0"
+            schemaLocation="eppcom-1.0.xsd"/>
+    <import namespace="urn:ietf:params:xml:ns:contact-1.0"
+            schemaLocation="contact-1.0.xsd"/>
+
+    <annotation>
+      <documentation>
+        Extensible Provisioning Protocol v1.0
+        .NO extensions
+      </documentation>
+    </annotation>
+
+    <element name="transfer"   type="no-ext-domain:transferExtensionType"/>
+
+    <complexType name="transferExtensionType">
+       <sequence>
+         <element name="token" type="no-ext-domain:transferTokenType"
+          minOccurs="0"/>
+	 <element name="notify" type="no-ext-domain:transferNotifyType"
+          minOccurs="0"/>
+       </sequence>
+    </complexType>
+
+    <simpleType name="transferTokenType">
+       <restriction base="token">
+         <minLength value="1"/>
+         <maxLength value="512"/>
+       </restriction>
+    </simpleType>
+
+
+    <complexType name="transferNotifyType">
+      <choice>
+        <element name="email" type="eppcom:minTokenType"/>
+        <element name="mobilePhone" type="contact:e164Type"/>
+      </choice>
+    </complexType>
+
+    <element name="withdraw" type="no-ext-domain:withdrawType"/>
+
+    <complexType name="withdrawType">
+      <sequence>
+        <element name="name" type="eppcom:labelType"/>
+      </sequence>
+    </complexType>
+    
+    <element name="delete" type="no-ext-domain:deleteExtensionType"/>
+
+    <complexType name="deleteExtensionType">
+       <sequence>
+         <element name="deleteFromDNS"      type="date"/>
+         <element name="deleteFromRegistry" type="date"/>
+       </sequence>
+    </complexType>
+  </schema>

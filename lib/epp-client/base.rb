@@ -11,6 +11,7 @@ require 'epp-client/exceptions'
 require 'epp-client/ssl'
 require 'epp-client/poll'
 require 'epp-client/domain'
+require 'epp-client/host'
 require 'epp-client/contact'
 
 module EPPClient
@@ -43,6 +44,7 @@ module EPPClient
     include EPPClient::Poll # keep before object definition modules.
     include EPPClient::Domain
     include EPPClient::Contact
+    include EPPClient::Host
 
     attr_accessor :client_id, :password, :server, :port, :services, :lang, :extensions, :version, :context
     attr_writer :clTRID
