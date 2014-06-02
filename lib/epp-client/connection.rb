@@ -1,8 +1,4 @@
-class SSLSocketUtf8 < OpenSSL::SSL::SSLSocket
-  def sysread *args
-    super.force_encoding ::Encoding::UTF_8
-  end
-end
+#encoding: utf-8
 
 module EPPClient
   module Connection
@@ -60,7 +56,7 @@ module EPPClient
     # sends a frame
     def send_frame(xml)
       @sent_frame = xml
-      @socket.write([xml.bytesize + 4].pack("N") + xml)
+      @socket.write([xml.bytesize + 4].pack("N").force_encoding("UTF-8") + xml)
       sent_frame_to_xml
       return
     end
@@ -76,7 +72,7 @@ module EPPClient
         end
       else
         size = size.unpack('N')[0]
-        @recv_frame = @socket.read(size - 4)
+        @recv_frame = @socket.read(size - 4).force_encoding("utf-8")
         recv_frame_to_xml
       end
     end
