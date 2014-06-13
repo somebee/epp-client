@@ -8,7 +8,9 @@ module EPPClient
     SCHEMAS_NORID = %w[
       no-ext-contact-1.0
       no-ext-host-1.0
+      no-ext-domain-1.0
       no-ext-domain-1.1
+      no-ext-epp-1.0
     ]
 
     EPPClient::SCHEMAS_URL.merge!(SCHEMAS_NORID.inject({}) do |a,s|
@@ -46,6 +48,10 @@ module EPPClient
       @services = EPPClient::SCHEMAS_URL.values_at('domain', 'contact')
       super(attrs)
       @extensions << EPPClient::SCHEMAS_URL['no-ext-contact']
+    end
+
+    def schema name
+      EPPClient::SCHEMAS_URL[name]
     end
 
     # Extends the EPPClient::Contact#contact_info so that the specific
@@ -188,6 +194,112 @@ module EPPClient
       #  </extension>
       
     end
+
+    #<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+    #<epp xmlns="urn:ietf:params:xml:ns:epp-1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="urn:ietf:params:xml:ns:epp-1.0 epp-1.0.xsd">
+    #  <command>
+    #    <transfer op="request">
+    #      <domain:transfer xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd">
+    #        <domain:name>transfer-test2-5745.no</domain:name>
+    #      </domain:transfer>
+    #    </transfer>
+    #    <extension>
+    #      <no-ext-domain:transfer xmlns:no-ext-domain="http://www.norid.no/xsd/no-ext-domain-1.0" xsi:schemaLocation="http://www.norid.no/xsd/no-ext-domain-1.0 no-ext-domain-1.0.xsd">
+    #        <no-ext-domain:notify>
+    #          <no-ext-domain:email>pxtra2@example.no</no-ext-domain:email>
+    #        </no-ext-domain:notify>
+    #      </no-ext-domain:transfer>
+    #    </extension>
+    #    <clTRID>NORID-5948-1265060730026031</clTRID>
+    #  </command>
+    #</epp>
+
+    # Object pending transfer - possible 'error'
+    def domain_transfer op, domain, args = {}
+      xml = domain_transfer_xml(op, domain, args)
+      puts "\n--- request from transfer #{op} ---"
+      puts xml
+
+      response = send_request(xml)
+      puts "\n--- response from transfer #{op} ---"
+      puts response
+
+      get_result(:xml => response, :callback => :"domain_transfer_#{op}_process")
+    end
+
+    def domain_transfer_xml op, domain, args
+      return domain_transfer_execute_xml(domain,args) if op == :execute
+    
+      command do |xml|
+        xml.transfer(op: op) do
+          xml.transfer(:xmlns => schema('domain-1.0')) do xml.name domain end
+        end
+
+        if op == :request
+          xml.extension do
+            xml.transfer(:xmlns => schema('no-ext-domain-1.1')) do
+              xml.notify do xml.email args[:email] end
+            end
+          end
+        end
+      end
+    end
+
+    def domain_transfer_execute_xml domain, args
+      builder do |xml|
+        xml.extension do
+          xml.command(:xmlns => schema('no-ext-epp-1.0')) do
+            xml.transfer(op: 'execute') do
+              xml.transfer(:xmlns => schema('domain-1.0')) do 
+                xml.name domain 
+                # renew?!?
+              end
+            end
+            xml.extension do
+              xml.transfer(:xmlns => schema('no-ext-domain-1.1')) do 
+                xml.token(args[:token])
+              end
+            end
+            xml.clTRID(clTRID)
+          end
+        end
+      end
+    end
+
+    def domain_transfer_request_process xml
+      schemas = EPPClient::SCHEMAS_URL
+      dom = xml.xpath('epp:resData/domain:trnData',schemas)
+      ret = {
+        status: dom.xpath('domain:trStatus', schemas).text
+      }
+    end
+
+    def domain_transfer_query_process xml
+      schemas = EPPClient::SCHEMAS_URL
+      dom = xml.xpath('epp:resData/domain:trnData',schemas)
+      ret = {
+        status: dom.xpath('domain:trStatus', schemas).text
+      }
+    end
+
+    def domain_transfer_cancel_process xml
+      schemas = EPPClient::SCHEMAS_URL
+      dom = xml.xpath('epp:resData/domain:trnData',schemas)
+      ret = {
+        status: dom.xpath('domain:trStatus', schemas).text
+      }
+    end
+
+    def domain_transfer_execute_process xml
+      schemas = EPPClient::SCHEMAS_URL
+      dom = xml.xpath('epp:resData/domain:trnData',schemas)
+      ret = {
+        status: dom.xpath('domain:trStatus', schemas).text
+      }
+    end
+
+    
+
 
     # keep that at the end.
     include EPPClient::SecDNS
