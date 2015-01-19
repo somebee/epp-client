@@ -252,7 +252,7 @@ module EPPClient
             xml.transfer(op: 'execute') do
               xml.transfer(:xmlns => schema('domain-1.0')) do 
                 xml.name domain 
-                xml.period({:unit => "m"}, 12) # renew for 12 months
+                xml.period({:unit => "m"}, 12) if args[:renew] # renew for 12 months
               end
             end
             xml.extension do
